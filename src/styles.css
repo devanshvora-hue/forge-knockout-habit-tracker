@@ -1,5 +1,7 @@
 :root {
   --accent: #2f6f4f;
+  --accent-soft: #e7f3ec;
+  --flame: #e08a2e;
   --bg: #fafaf8;
   --surface: #ffffff;
   --border: #dddddd;
@@ -22,7 +24,7 @@ body {
 }
 
 .app {
-  max-width: 480px;
+  max-width: 560px;
   margin: 0 auto;
   padding: 24px 16px 64px;
 }
@@ -35,36 +37,48 @@ h1 {
 .add-habit-form {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 14px;
   margin-bottom: 28px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
 }
 
-.add-habit-form label {
-  font-size: 0.9rem;
+.add-habit-fields {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 160px;
+}
+
+.field label {
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-muted);
 }
 
-.add-habit-row {
-  display: flex;
-  gap: 8px;
-}
-
-.add-habit-row input {
-  flex: 1;
+.field input {
   min-height: 44px;
   padding: 0 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 1rem;
-  background: var(--surface);
+  background: var(--bg);
   color: var(--text);
 }
 
-.add-habit-row button {
+.add-habit-form > button {
+  align-self: flex-start;
   min-height: 44px;
-  min-width: 44px;
-  padding: 0 18px;
+  padding: 0 20px;
   border: none;
   border-radius: 8px;
   background: var(--accent);
@@ -74,11 +88,46 @@ h1 {
   cursor: pointer;
 }
 
-.add-habit-row button:hover {
+.add-habit-form > button:hover {
   filter: brightness(1.05);
 }
 
 .empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+
+.empty-state-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.empty-state-subtitle {
+  color: var(--text-muted);
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+}
+
+.empty-state-cta {
+  min-height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.empty-state-cta:hover {
+  filter: brightness(1.05);
+}
+
+.empty-state-inline {
   color: var(--text-muted);
   font-size: 0.95rem;
 }
@@ -94,37 +143,74 @@ h1 {
 
 .habit-row {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: stretch;
+  gap: 4px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
+  transition: box-shadow 0.15s ease;
+}
+
+.habit-row:has(.habit-check[aria-pressed="true"]) {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.habit-row-archived {
+  opacity: 0.65;
 }
 
 .habit-check {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 44px;
+  gap: 12px;
+  min-height: 56px;
   padding: 8px 12px;
   border: none;
   background: transparent;
   text-align: left;
   font-size: 1rem;
   cursor: pointer;
-  border-radius: 8px 0 0 8px;
+  border-radius: 10px 0 0 10px;
+  min-width: 0;
+}
+
+.habit-check:disabled {
+  cursor: default;
 }
 
 .habit-check-icon {
-  width: 20px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border);
+  border-radius: 50%;
   color: var(--accent);
   font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.habit-check[aria-pressed="true"] .habit-check-icon {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.habit-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
 .habit-name {
   color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .habit-name-done {
@@ -132,10 +218,61 @@ h1 {
   text-decoration: line-through;
 }
 
+.habit-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.habit-category-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.habit-streak {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.habit-streak-active {
+  color: var(--flame);
+  font-weight: 600;
+}
+
+.habit-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding-right: 4px;
+}
+
+.habit-action {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.habit-action:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
 .habit-delete {
   flex-shrink: 0;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border: none;
   background: transparent;
   color: var(--text-muted);
@@ -149,8 +286,98 @@ h1 {
   color: var(--danger);
 }
 
+.archived-section {
+  margin-top: 20px;
+}
+
+.archived-section summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 8px 0;
+}
+
+.habit-list-archived {
+  margin-top: 8px;
+}
+
 button:focus-visible,
 input:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 10;
+}
+
+.modal {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  margin: 0 0 16px;
+  font-size: 1.15rem;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.modal-cancel,
+.modal-save {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-cancel {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+}
+
+.modal-cancel:hover {
+  background: var(--bg);
+}
+
+.modal-save {
+  border: none;
+  background: var(--accent);
+  color: #fff;
+}
+
+.modal-save:hover {
+  filter: brightness(1.05);
+}
+
+@media (max-width: 420px) {
+  .add-habit-fields {
+    flex-direction: column;
+  }
 }

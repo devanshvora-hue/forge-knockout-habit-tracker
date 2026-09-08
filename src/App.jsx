@@ -1,55 +1,96 @@
 import { useEffect, useState } from "react";
 import AddHabitForm from "./components/AddHabitForm.jsx";
 import HabitList from "./components/HabitList.jsx";
-import { loadHabits, saveHabits } from "./lib/storage.js";
+import EditHabitModal from "./components/EditHabitModal.jsx";
+import { loadData, saveHabits, saveCheckIns } from "./lib/storage.js";
 import { todayISO } from "./lib/dates.js";
+import {
+  toggleCheckIn as toggleCheckInEntry,
+  deleteCheckInsForHabit,
+} from "./lib/checkins.js";
 
 export default function App() {
-  const [habits, setHabits] = useState(() => loadHabits());
+  const [habits, setHabits] = useState(() => loadData().habits);
+  const [checkIns, setCheckIns] = useState(() => loadData().checkIns);
+  const [editingHabit, setEditingHabit] = useState(null);
 
   useEffect(() => {
     saveHabits(habits);
   }, [habits]);
 
-  function handleAddHabit(name) {
+  useEffect(() => {
+    saveCheckIns(checkIns);
+  }, [checkIns]);
+
+  function handleAddHabit({ name, category }) {
+    const now = todayISO();
     const newHabit = {
       id: crypto.randomUUID(),
       name,
-      createdAt: todayISO(),
-      checkIns: [],
+      description: "",
+      category: category || null,
+      frequency: { type: "daily" },
+      active: true,
+      createdAt: now,
+      updatedAt: now,
     };
     setHabits((prev) => [...prev, newHabit]);
   }
 
   function handleToggleToday(habitId) {
-    const today = todayISO();
-    setHabits((prev) =>
-      prev.map((habit) => {
-        if (habit.id !== habitId) return habit;
-        const isDone = habit.checkIns.includes(today);
-        return {
-          ...habit,
-          checkIns: isDone
-            ? habit.checkIns.filter((d) => d !== today)
-            : [...habit.checkIns, today],
-        };
-      }),
-    );
+    setCheckIns((prev) => toggleCheckInEntry(prev, habitId, todayISO()));
   }
 
   function handleDelete(habitId) {
-    setHabits((prev) => prev.filter((habit) => habit.id !== habitId));
+    setHabits((prev) => prev.filter((h) => h.id !== habitId));
+    setCheckIns((prev) => deleteCheckInsForHabit(prev, habitId));
+    setEditingHabit((prev) => (prev?.id === habitId ? null : prev));
   }
+
+  function handleArchiveToggle(habitId) {
+    setHabits((prev) =>
+      prev.map((h) =>
+        h.id === habitId
+          ? { ...h, active: !h.active, updatedAt: todayISO() }
+          : h,
+      ),
+    );
+  }
+
+  function handleSaveEdit(updates) {
+    setHabits((prev) =>
+      prev.map((h) =>
+        h.id === editingHabit.id
+          ? { ...h, ...updates, updatedAt: todayISO() }
+          : h,
+      ),
+    );
+    setEditingHabit(null);
+  }
+
+  const activeHabits = habits.filter((h) => h.active);
+  const archivedHabits = habits.filter((h) => !h.active);
 
   return (
     <main className="app">
       <h1>Today</h1>
       <AddHabitForm onAddHabit={handleAddHabit} />
       <HabitList
-        habits={habits}
+        habits={activeHabits}
+        archivedHabits={archivedHabits}
+        checkIns={checkIns}
         onToggleToday={handleToggleToday}
+        onEdit={setEditingHabit}
         onDelete={handleDelete}
+        onArchiveToggle={handleArchiveToggle}
       />
+      {editingHabit && (
+        <EditHabitModal
+          habit={editingHabit}
+          onSave={handleSaveEdit}
+          onClose={() => setEditingHabit(null)}
+        />
+      )}
     </main>
   );
 }
