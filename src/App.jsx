@@ -3,7 +3,7 @@ import AddHabitForm from "./components/AddHabitForm.jsx";
 import HabitList from "./components/HabitList.jsx";
 import EditHabitModal from "./components/EditHabitModal.jsx";
 import { loadData, saveHabits, saveCheckIns } from "./lib/storage.js";
-import { todayISO } from "./lib/dates.js";
+import { todayISO, formatDisplayDate } from "./lib/dates.js";
 import {
   toggleCheckIn as toggleCheckInEntry,
   deleteCheckInsForHabit,
@@ -74,6 +74,7 @@ export default function App() {
   return (
     <main className="app">
       <h1>Today</h1>
+      <p className="app-subtitle">{formatDisplayDate()}</p>
       <AddHabitForm onAddHabit={handleAddHabit} />
       <HabitList
         habits={activeHabits}

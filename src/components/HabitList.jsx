@@ -14,6 +14,16 @@ export default function HabitList({
   if (isFullyEmpty) {
     return (
       <div className="empty-state">
+        <div className="empty-state-icon" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 5v14M5 12h14"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
         <p className="empty-state-title">Start building your routine.</p>
         <p className="empty-state-subtitle">
           Add your first habit above to begin tracking streaks.
@@ -53,7 +63,12 @@ export default function HabitList({
 
       {archivedHabits.length > 0 && (
         <details className="archived-section">
-          <summary>Archived ({archivedHabits.length})</summary>
+          <summary className="archived-summary">
+            <span className="archived-chevron" aria-hidden="true">
+              ▸
+            </span>
+            Archived ({archivedHabits.length})
+          </summary>
           <ul className="habit-list habit-list-archived">
             {archivedHabits.map((habit) => (
               <HabitRow

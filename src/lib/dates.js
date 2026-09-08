@@ -29,3 +29,11 @@ export function compareISO(a, b) {
 export function isFutureISO(iso, referenceDate = todayISO()) {
   return compareISO(iso, referenceDate) > 0;
 }
+
+export function formatDisplayDate(iso = todayISO()) {
+  return parseISO(iso).toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
